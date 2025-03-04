@@ -1,2 +1,11 @@
-print"test"
+import tkinter as tk
+import random
+import json
+Taille=3
+Vide= None 
+
+class Taquin: 
+  def_intit_(self, root): 
+    self.root= root
+    self.root.title
 
