@@ -1,16 +1,14 @@
-import tkinter as tk
+import tkinter as tk 
 
-valeur = list(range(1,16))+[0]
-matrix = [[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,0]]
-matrix = [valeur[i:i+4]for i in range(0,16,4)]
-
-
-
+#definition de la matrice que l on utilisera avec toutes les valeurs de 0 a 15 
+valeur = list(range(1,16))+[0]    #creation d une liste d entiers de 1 a 16 et une autre liste avec 0
+matrix = [[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,0]] #creation d une matrice
+matrix = [valeur[i:i+4]for i in range(0,16,4)] #permet de donner la forme souhaitee a la matrice
 
 
 import random 
 
-def compte_inversions(flat_list):
+def compte_inversions(flat_list):   #compte le nombre d inversions dans toute la liste, la liste flat permet de condenser toutes listes en une seule et donc d integrer le 0 aussi
     nombres = [num for num in flat_list if num != 0]
     inversions = sum(
         1 for i in range(len(nombres)) for j in range(i + 1, len(nombres))
@@ -18,11 +16,11 @@ def compte_inversions(flat_list):
     )
     return inversions  
 
-def est_solvable(nombres):
+def est_solvable(nombres):  #verifie que le puzzle est resolvable, le nombre d'inversions doit être divisible par 2 dans le cas de notre matrice
     inversions = compte_inversions(nombres)  
     return inversions % 2 == 0  
 
-def grille_solvable():
+def grille_solvable():   #permet de verifier que la matrice du taquin est solvable 
     while True:
         valeurs = list(range(1, 16))  
         random.shuffle(valeurs)  
@@ -35,5 +33,5 @@ def grille_solvable():
 matrice = grille_solvable()  
 for ligne in matrice: 
     print(ligne)
-
+#permet d'afficher la matrice de notre jeu avec toutes les valeurs 
 
