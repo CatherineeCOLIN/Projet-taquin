@@ -33,5 +33,94 @@ def grille_solvable():
 matrice = grille_solvable()  
 for ligne in matrice: 
     print(ligne)
- 
 
+
+
+import tkinter as tk
+import random
+
+HEIGHT = 500
+WIDTH = 500
+largeur_case = WIDTH // 4
+hauteur_case = HEIGHT // 4
+
+valeurs = [[1, 2, 3, 4],
+           [5, 6, 7, 8],
+           [9, 10, 11, 12],
+           [13, 14, 15, 0]]
+
+coups = 0  # compteur de mouvements
+
+racine = tk.Tk()
+racine.title("🧩 Taquin Ludique")
+racine.config(bg="#f2f2f2")
+
+label = tk.Label(racine, text="🧩 Taquin", font=("Georgia", 24, "bold"), bg="#f2f2f2")
+label.pack(pady=10)
+
+compteur = tk.Label(racine, text="Coups : 0", font=("georgia", 16), bg="#f2f2f2")
+compteur.pack()
+
+canvas = tk.Canvas(racine, width=WIDTH, height=HEIGHT, bg="peach puff", highlightthickness=0)
+canvas.pack(pady=10)
+
+def afficher_grille():
+    canvas.delete("all")
+    for i in range(4):
+        for j in range(4):
+            x1 = j * largeur_case + 5
+            y1 = i * hauteur_case + 5
+            x2 = x1 + largeur_case - 10
+            y2 = y1 + hauteur_case - 10
+            val = valeurs[i][j]
+            if val != 0:
+                canvas.create_rectangle(x1, y1, x2, y2, fill="cadetblue3", outline="black", width=2)
+                canvas.create_text(
+                    (x1 + x2) // 2,
+                    (y1 + y2) // 2,
+                    text=str(val),
+                    font=("Georgia", 24, "bold"),
+                    fill="#2b2d42"
+                )
+            else:
+                # case vide avec une couleur spéciale
+                canvas.create_rectangle(x1, y1, x2, y2, fill="medium purple", outline="black", width=1)
+
+def trouver_case_vide():
+    for i in range(4):
+        for j in range(4):
+            if valeurs[i][j] == 0:
+                return i, j
+
+def clic(event):
+    global coups
+    j = event.x // largeur_case
+    i = event.y // hauteur_case
+    i0, j0 = trouver_case_vide()
+    if (abs(i - i0) == 1 and j == j0) or (abs(j - j0) == 1 and i == i0):
+        valeurs[i0][j0], valeurs[i][j] = valeurs[i][j], valeurs[i0][j0]
+        coups += 1
+        compteur.config(text=f"Coups : {coups}")
+        afficher_grille()
+
+def melanger():
+    global coups
+    coups = 0
+    nums = list(range(1, 16)) + [0]
+    random.shuffle(nums)
+    for i in range(4):
+        for j in range(4):
+            valeurs[i][j] = nums[i * 4 + j]
+    afficher_grille()
+    compteur.config(text="Coups : 0")
+
+canvas.bind("<Button-1>", clic)
+
+btn_melanger = tk.Button(
+    racine, text="🔁 Nouvelle Partie", font=("Georgia", 14), bg="lawn green",
+    command=melanger, relief="raised", bd=2
+)
+btn_melanger.pack(pady=10)
+
+afficher_grille()
+racine.mainloop()
