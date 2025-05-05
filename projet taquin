@@ -1,42 +1,5 @@
-import tkinter as tk 
-
-
-valeur = list(range(1,16))+[0]    
-matrix = [[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,0]]
-matrix = [valeur[i:i+4]for i in range(0,16,4)] 
-
-
-import random 
-
-def compte_inversions(flat_list):  
-    nombres = [num for num in flat_list if num != 0]
-    inversions = sum(
-        1 for i in range(len(nombres)) for j in range(i + 1, len(nombres))
-        if nombres[i] > nombres[j]
-    )
-    return inversions  
-
-def est_solvable(nombres):  
-    inversions = compte_inversions(nombres)  
-    return inversions % 2 == 0  
-
-def grille_solvable():   
-    while True:
-        valeurs = list(range(1, 16))  
-        random.shuffle(valeurs)  
-
-        if est_solvable(valeurs):  
-            valeurs.append(0)  
-            grille = [valeurs[i:i+4] for i in range(0, 16, 4)]  
-            return grille  
-
-matrice = grille_solvable()  
-for ligne in matrice: 
-    print(ligne)
-
-
-
 import tkinter as tk
+from tkinter import messagebox
 import random
 
 HEIGHT = 500
@@ -49,7 +12,7 @@ valeurs = [[1, 2, 3, 4],
            [9, 10, 11, 12],
            [13, 14, 15, 0]]
 
-coups = 0  # compteur de mouvements
+coups = 0  
 
 racine = tk.Tk()
 racine.title("🧩 Taquin Ludique")
@@ -83,7 +46,6 @@ def afficher_grille():
                     fill="#2b2d42"
                 )
             else:
-                # case vide avec une couleur spéciale
                 canvas.create_rectangle(x1, y1, x2, y2, fill="medium purple", outline="black", width=1)
 
 def trouver_case_vide():
@@ -91,6 +53,35 @@ def trouver_case_vide():
         for j in range(4):
             if valeurs[i][j] == 0:
                 return i, j
+
+def verifier_victoire():
+    attendu = list(range(1, 16)) + [0]
+    plat = [valeurs[i][j] for i in range(4) for j in range(4)]
+    return plat == attendu
+
+def animation_victoire(etape=0):
+    if etape > 5:
+        return
+    couleurs = ["gold", "light blue"] if etape % 2 == 0 else ["cadetblue3", "peach puff"]
+    for i in range(4):
+        for j in range(4):
+            val = valeurs[i][j]
+            x1 = j * largeur_case + 5
+            y1 = i * hauteur_case + 5
+            x2 = x1 + largeur_case - 10
+            y2 = y1 + hauteur_case - 10
+            if val != 0:
+                canvas.create_rectangle(x1, y1, x2, y2, fill=couleurs[0], outline="black", width=2)
+                canvas.create_text(
+                    (x1 + x2) // 2,
+                    (y1 + y2) // 2,
+                    text=str(val),
+                    font=("Georgia", 24, "bold"),
+                    fill="#2b2d42"
+                )
+            else:
+                canvas.create_rectangle(x1, y1, x2, y2, fill=couleurs[1], outline="black", width=1)
+    racine.after(200, lambda: animation_victoire(etape + 1))
 
 def clic(event):
     global coups
@@ -102,6 +93,9 @@ def clic(event):
         coups += 1
         compteur.config(text=f"Coups : {coups}")
         afficher_grille()
+        if verifier_victoire():
+            animation_victoire()
+            racine.after(200, lambda: messagebox.showinfo("🎉 Victoire !", f"Bravo ! Vous avez gagné en {coups} coups !"))
 
 def melanger():
     global coups
